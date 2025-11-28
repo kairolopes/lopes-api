@@ -66,6 +66,41 @@ app.get("/api/imoveis", async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// 🏢 IMÓVEIS - POST /api/imoveis  (cadastrar imóvel)
+// -------------------------------------------------------------
+app.post("/api/imoveis", async (req, res) => {
+  try {
+    const dados = req.body;
+
+    // validação simples (pode melhorar depois)
+    if (!dados.titulo || !dados.tipo || !dados.cidade || !dados.bairro) {
+      return res.status(400).json({ error: "Campos obrigatórios faltando." });
+    }
+
+    const docRef = await db.collection("imoveis").add({
+      titulo: dados.titulo,
+      tipo: dados.tipo,
+      cidade: dados.cidade,
+      bairro: dados.bairro,
+      area: Number(dados.area || 0),
+      quartos: Number(dados.quartos || 0),
+      banheiros: Number(dados.banheiros || 0),
+      vagas: Number(dados.vagas || 0),
+      preco: Number(dados.preco || 0),
+      condominio: Number(dados.condominio || 0),
+      destaque: Boolean(dados.destaque || false),
+      imagem: dados.imagem || "",
+      nicochatUrl: dados.nicochatUrl || "",
+    });
+
+    res.status(201).json({ id: docRef.id, ok: true });
+  } catch (err) {
+    console.error("Erro ao criar imovel:", err);
+    res.status(500).json({ error: "Erro ao criar imóvel" });
+  }
+});
+
+// -------------------------------------------------------------
 // 🛒 MARKETPLACE - GET /api/marketplace
 // -------------------------------------------------------------
 app.get("/api/marketplace", async (req, res) => {
